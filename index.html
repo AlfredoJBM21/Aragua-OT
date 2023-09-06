@@ -8,6 +8,7 @@
         <meta name="apple-mobile-web-app-capable" content="yes">
         <link rel="stylesheet" href="css/leaflet.css"><link rel="stylesheet" href="css/L.Control.Locate.min.css">
         <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet-search.css">
         <link rel="stylesheet" href="css/filter.css">
 <link rel="stylesheet" href="css/nouislider.min.css">
         <link rel="stylesheet" href="css/leaflet-measure.css">
@@ -19,7 +20,7 @@
             margin: 0;
         }
         </style>
-        <title>MINEC ARAGUA DEMO</title>
+        <title>ARAGUA OT</title>
     </head>
     <body>
         <div id="map">
@@ -35,6 +36,7 @@
         <script src="js/labelgun.min.js"></script>
         <script src="js/labels.js"></script>
         <script src="js/leaflet-measure.js"></script>
+        <script src="js/leaflet-search.js"></script>
         <script src="js/tailDT.js"></script>
 <script src="js/nouislider.min.js"></script>
 <script src="js/wNumb.js"></script>
@@ -508,11 +510,11 @@
             return {
                 pane: 'pane_PuestosdeGuardaparques_7',
                 shape: 'diamond',
-                radius: 10.8,
+                radius: 8.0,
                 stroke: false,
                 fill: true,
                 fillOpacity: 1,
-                fillColor: 'rgba(123,218,106,0.8)',
+                fillColor: 'rgba(186,232,47,0.8)',
                 interactive: true,
             }
         }
@@ -572,11 +574,12 @@
         function style_ParquesdeRecreacin_8_0() {
             return {
                 pane: 'pane_ParquesdeRecreacin_8',
+                shape: 'triangle',
                 radius: 8.8,
                 stroke: false,
                 fill: true,
                 fillOpacity: 1,
-                fillColor: 'rgba(64,101,61,0.8)',
+                fillColor: 'rgba(37,95,56,0.8)',
                 interactive: true,
             }
         }
@@ -606,10 +609,10 @@
                 return this._div;
             };
             title.update = function () {
-                this._div.innerHTML = '<h2>MINEC ARAGUA DEMO</h2>';
+                this._div.innerHTML = '<h2>ARAGUA OT</h2>';
             };
             title.addTo(map);
-            var abstract = new L.Control({'position':'bottomright'});
+            var abstract = new L.Control({'position':'bottomleft'});
             abstract.onAdd = function (map) {
                 this._div = L.DomUtil.create('div',
                 'leaflet-control abstract');
@@ -621,12 +624,19 @@
                 abstract.show = function () {
                     this._div.classList.remove("abstract");
                     this._div.classList.add("abstractUncollapsed");
-                    this._div.innerHTML = 'Mapa del Minec para visualización en versión web.';
+                    this._div.innerHTML = 'Mapa web para visualización y consulta de información de Ordenación del Territorio.';
             };
             abstract.addTo(map);
         var baseMaps = {};
         L.control.layers(baseMaps,{'<img src="legend/ParquesdeRecreacin_8.png" /> Parques de Recreación': layer_ParquesdeRecreacin_8,'<img src="legend/PuestosdeGuardaparques_7.png" /> Puestos de Guardaparques': layer_PuestosdeGuardaparques_7,'Vertederos y Rellenos<br /><table><tr><td style="text-align: center;"><img src="legend/VertederosyRellenos_6_Vertedero0.png" /></td><td>Vertedero</td></tr><tr><td style="text-align: center;"><img src="legend/VertederosyRellenos_6_RellenoSanitario1.png" /></td><td>Relleno Sanitario</td></tr></table>': layer_VertederosyRellenos_6,'<img src="legend/MNPicoCodazzi_5.png" /> MN Pico Codazzi': layer_MNPicoCodazzi_5,'<img src="legend/ParqueNacionalHenriPitttier_4.png" /> Parque Nacional Henri Pitttier': layer_ParqueNacionalHenriPitttier_4,'<img src="legend/Municipios_3.png" /> Municipios': layer_Municipios_3,"Google Satellite": layer_GoogleSatellite_2,"Google Hybrid": layer_GoogleHybrid_1,"Google Terrain": layer_GoogleTerrain_0,}).addTo(map);
         setBounds();
+        map.addControl(new L.Control.Search({
+            layer: layer_Municipios_3,
+            initial: false,
+            hideMarkerOnCollapse: true,
+            propertyName: 'MUNICIPIO_'}));
+        document.getElementsByClassName('search-button')[0].className +=
+         ' fa fa-binoculars';
         var mapDiv = document.getElementById('map');
         var row = document.createElement('div');
         row.className="row";
