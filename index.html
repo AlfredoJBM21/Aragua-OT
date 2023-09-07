@@ -8,7 +8,6 @@
         <meta name="apple-mobile-web-app-capable" content="yes">
         <link rel="stylesheet" href="css/leaflet.css"><link rel="stylesheet" href="css/L.Control.Locate.min.css">
         <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
-        <link rel="stylesheet" href="css/leaflet-search.css">
         <link rel="stylesheet" href="css/filter.css">
 <link rel="stylesheet" href="css/nouislider.min.css">
         <link rel="stylesheet" href="css/leaflet-measure.css">
@@ -36,7 +35,6 @@
         <script src="js/labelgun.min.js"></script>
         <script src="js/labels.js"></script>
         <script src="js/leaflet-measure.js"></script>
-        <script src="js/leaflet-search.js"></script>
         <script src="js/tailDT.js"></script>
 <script src="js/nouislider.min.js"></script>
 <script src="js/wNumb.js"></script>
@@ -126,6 +124,10 @@
                     <tr>\
                         <th scope="row">MUNICIPIO_</th>\
                         <td>' + (feature.properties['MUNICIPIO_'] !== null ? autolinker.link(feature.properties['MUNICIPIO_'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">CAPITAL</th>\
+                        <td>' + (feature.properties['CAPITAL'] !== null ? autolinker.link(feature.properties['CAPITAL'].toLocaleString()) : '') + '</td>\
                     </tr>\
                 </table>';
             layer.bindPopup(popupContent, {maxHeight: 400});
@@ -443,7 +445,7 @@
                 case 'Vertedero':
                     return {
                 pane: 'pane_VertederosyRellenos_6',
-                radius: 10.8,
+                radius: 8.8,
                 stroke: false,
                 fill: true,
                 fillOpacity: 1,
@@ -455,7 +457,7 @@
                     return {
                 pane: 'pane_VertederosyRellenos_6',
                 shape: 'square',
-                radius: 9.0,
+                radius: 7.2,
                 stroke: false,
                 fill: true,
                 fillOpacity: 1,
@@ -486,10 +488,6 @@
         bounds_group.addLayer(layer_VertederosyRellenos_6);
         function pop_PuestosdeGuardaparques_7(feature, layer) {
             var popupContent = '<table>\
-                    <tr>\
-                        <th scope="row">Id</th>\
-                        <td>' + (feature.properties['Id'] !== null ? autolinker.link(feature.properties['Id'].toLocaleString()) : '') + '</td>\
-                    </tr>\
                     <tr>\
                         <th scope="row">Nombre</th>\
                         <td>' + (feature.properties['NOMBRE'] !== null ? autolinker.link(feature.properties['NOMBRE'].toLocaleString()) : '') + '</td>\
@@ -575,7 +573,7 @@
             return {
                 pane: 'pane_ParquesdeRecreacin_8',
                 shape: 'triangle',
-                radius: 8.8,
+                radius: 8.0,
                 stroke: false,
                 fill: true,
                 fillOpacity: 1,
@@ -630,13 +628,6 @@
         var baseMaps = {};
         L.control.layers(baseMaps,{'<img src="legend/ParquesdeRecreacin_8.png" /> Parques de Recreación': layer_ParquesdeRecreacin_8,'<img src="legend/PuestosdeGuardaparques_7.png" /> Puestos de Guardaparques': layer_PuestosdeGuardaparques_7,'Vertederos y Rellenos<br /><table><tr><td style="text-align: center;"><img src="legend/VertederosyRellenos_6_Vertedero0.png" /></td><td>Vertedero</td></tr><tr><td style="text-align: center;"><img src="legend/VertederosyRellenos_6_RellenoSanitario1.png" /></td><td>Relleno Sanitario</td></tr></table>': layer_VertederosyRellenos_6,'<img src="legend/MNPicoCodazzi_5.png" /> MN Pico Codazzi': layer_MNPicoCodazzi_5,'<img src="legend/ParqueNacionalHenriPitttier_4.png" /> Parque Nacional Henri Pitttier': layer_ParqueNacionalHenriPitttier_4,'<img src="legend/Municipios_3.png" /> Municipios': layer_Municipios_3,"Google Satellite": layer_GoogleSatellite_2,"Google Hybrid": layer_GoogleHybrid_1,"Google Terrain": layer_GoogleTerrain_0,}).addTo(map);
         setBounds();
-        map.addControl(new L.Control.Search({
-            layer: layer_Municipios_3,
-            initial: false,
-            hideMarkerOnCollapse: true,
-            propertyName: 'MUNICIPIO_'}));
-        document.getElementsByClassName('search-button')[0].className +=
-         ' fa fa-binoculars';
         var mapDiv = document.getElementById('map');
         var row = document.createElement('div');
         row.className="row";
@@ -656,7 +647,7 @@
         document.getElementById("all").appendChild(col1);
         document.getElementById("all").appendChild(col2);
         col1.appendChild(mapDiv)
-        var Filters = {"MUNICIPIO_": "str"};
+        var Filters = {"HA": "real","CAPITAL": "str","MUNICIPIO_": "str"};
         function filterFunc() {
           map.eachLayer(function(lyr){
           if ("options" in lyr && "dataVar" in lyr["options"]){
@@ -746,6 +737,85 @@
           }
           })
         }
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_HA = document.createElement("div");
+            div_HA.id = "div_HA";
+            div_HA.className = "slider";
+            document.getElementById("menu").appendChild(div_HA);
+            var lab_HA = document.createElement('div');
+            lab_HA.innerHTML  = 'HA: <span id="val_HA"></span>';
+            lab_HA.className = 'filterlabel';
+            document.getElementById("menu").appendChild(lab_HA);
+            var reset_HA = document.createElement('div');
+            reset_HA.innerHTML = 'clear filter';
+            reset_HA.className = 'filterlabel';
+            lab_HA.className = 'filterlabel';
+            reset_HA.onclick = function() {
+                sel_HA.noUiSlider.reset();
+            };
+            document.getElementById("menu").appendChild(reset_HA);
+            var sel_HA = document.getElementById('div_HA');
+            noUiSlider.create(sel_HA, {
+                connect: true,
+                start: [2472.07, 200150.1],
+                range: {
+                min: 2472.07,
+                max: 200150.1
+                }
+            });
+            sel_HA.noUiSlider.on('update', function (values) {
+            val_HA = document.getElementById('val_HA');
+            val_HA.innerHTML = values.join(' - ');
+                filterFunc()
+            });
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_CAPITAL = document.createElement('div');
+            div_CAPITAL.id = "div_CAPITAL";
+            div_CAPITAL.className= "filterselect";
+            document.getElementById("menu").appendChild(div_CAPITAL);
+            sel_CAPITAL = document.createElement('select');
+            sel_CAPITAL.multiple = true;
+            sel_CAPITAL.size = 10;
+            sel_CAPITAL.id = "sel_CAPITAL";
+            var CAPITAL_options_str = "<option value='' unselected></option>";
+            sel_CAPITAL.onchange = function(){filterFunc()};
+            CAPITAL_options_str  += '<option value="BARBACOAS">BARBACOAS</option>';
+            CAPITAL_options_str  += '<option value="CAGUA">CAGUA</option>';
+            CAPITAL_options_str  += '<option value="CAMATAGUA">CAMATAGUA</option>';
+            CAPITAL_options_str  += '<option value="COLONIA TOVAR">COLONIA TOVAR</option>';
+            CAPITAL_options_str  += '<option value="EL CONSEJO">EL CONSEJO</option>';
+            CAPITAL_options_str  += '<option value="EL LIMÓN">EL LIMÓN</option>';
+            CAPITAL_options_str  += '<option value="LA VICTORIA">LA VICTORIA</option>';
+            CAPITAL_options_str  += '<option value="LAS TEJERÍAS">LAS TEJERÍAS</option>';
+            CAPITAL_options_str  += '<option value="MARACAY">MARACAY</option>';
+            CAPITAL_options_str  += '<option value="OCUMARE DE LA COSTA">OCUMARE DE LA COSTA</option>';
+            CAPITAL_options_str  += '<option value="PALO NEGRO">PALO NEGRO</option>';
+            CAPITAL_options_str  += '<option value="SAN CASIMIRO">SAN CASIMIRO</option>';
+            CAPITAL_options_str  += '<option value="SAN MATEO">SAN MATEO</option>';
+            CAPITAL_options_str  += '<option value="SAN SEBASTIÁN">SAN SEBASTIÁN</option>';
+            CAPITAL_options_str  += '<option value="SANTA CRUZ">SANTA CRUZ</option>';
+            CAPITAL_options_str  += '<option value="SANTA RITA">SANTA RITA</option>';
+            CAPITAL_options_str  += '<option value="TURMERO">TURMERO</option>';
+            CAPITAL_options_str  += '<option value="VILLA DE CURA">VILLA DE CURA</option>';
+            sel_CAPITAL.innerHTML = CAPITAL_options_str;
+            div_CAPITAL.appendChild(sel_CAPITAL);
+            var lab_CAPITAL = document.createElement('div');
+            lab_CAPITAL.innerHTML = 'CAPITAL';
+            lab_CAPITAL.className = 'filterlabel';
+            div_CAPITAL.appendChild(lab_CAPITAL);
+            var reset_CAPITAL = document.createElement('div');
+            reset_CAPITAL.innerHTML = 'clear filter';
+            reset_CAPITAL.className = 'filterlabel';
+            reset_CAPITAL.onclick = function() {
+                var options = document.getElementById("sel_CAPITAL").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_CAPITAL.appendChild(reset_CAPITAL);
             document.getElementById("menu").appendChild(
                 document.createElement("div"));
             var div_MUNICIPIO_ = document.createElement('div');
